@@ -11,7 +11,7 @@ SEM_END_DATE = os.environ.get("SEM_END_DATE")
 # Variables
 semester_class_start_date = datetime.strptime(SEM_START_DATE, "%Y-%m-%d")
 semester_class_end_date = datetime.strptime(SEM_END_DATE, "%Y-%m-%d")
-now = datetime.datetime.utcnow().isoformat() + "Z"
+now = datetime.utcnow().isoformat() + "Z"
 
 
 def get_attendance(service):
