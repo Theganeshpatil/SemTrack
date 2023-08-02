@@ -117,7 +117,8 @@ def delete_events_on_date(service, date):
     events = service.events().list(
         calendarId=CAL_ID,
         timeMin=start_of_day.isoformat() + 'Z',
-        timeMax=end_of_day.isoformat() + 'Z'
+        timeMax=end_of_day.isoformat() + 'Z',
+        singleEvents=True
     ).execute()
 
     events_list = events.get('items', [])
@@ -131,3 +132,35 @@ def delete_events_on_date(service, date):
         count_events += 1
     
     print(f"Deleted {count_events} events on", date)
+
+
+def absent_events_on_date(service, date, reason):
+    """Mark absent on all events of a given date
+    
+    Args: date (str): Date in YYYY-MM-DD format"""
+    # Fetch all events on that date
+    date_format = datetime.strptime(date, "%Y-%m-%d")
+    start_of_day = datetime(date_format.year, date_format.month, date_format.day, 0, 0, 0)
+    end_of_day = datetime(date_format.year, date_format.month, date_format.day, 23, 59, 59)
+    print(start_of_day, end_of_day)
+    events = service.events().list(
+        calendarId=CAL_ID,
+        timeMin=start_of_day.isoformat() + 'Z',
+        timeMax=end_of_day.isoformat() + 'Z',
+        singleEvents=True
+    ).execute()
+
+    events_list = events.get('items', [])
+    count_events = 0
+    for event in events_list:
+        event_id = event['id']
+        event['description'] = f"Absent due to {reason}"
+        # print(event)
+        service.events().update(
+            calendarId=CAL_ID,
+            eventId=event_id,
+            body=event
+        ).execute()
+        count_events += 1
+    
+    print(f"Marked Absent for {count_events} events on", date_format.strftime("%Y-%m-%d"))
