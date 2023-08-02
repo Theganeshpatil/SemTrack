@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from googleapiclient.discovery import build
 
+CAL_ID = 'bc673861aeb99f89350562855352bd12a53b6a14fe84a8046ff57cd0b9dccf78@group.calendar.google.com'
 
 def create_course_events(service):
     
@@ -32,15 +33,7 @@ def create_course_events(service):
         {'day': 'TU', 'start_time': '15:00:00', 'end_time': '17:00:00', 'event_name': 'IEC 312 LAB ES'},
         {'day': 'WE', 'start_time': '15:00:00', 'end_time': '17:00:00', 'event_name': 'CBS 312 LAB GBC'},
     ]
-    day_mapping = {
-        'MO': 'Mon',
-        'TU': 'Tue',
-        'WE': 'Wed',
-        'TH': 'Thu',
-        'FR': 'Fri',
-        'SA': 'Sat',
-        'SU': 'Sun'
-    }
+
     # Define the start and end dates of the semester
     semester_class_start_date = datetime.strptime("2023-08-02", "%Y-%m-%d")
     semester_class_end_date = datetime.strptime("2023-11-13", "%Y-%m-%d")
@@ -50,9 +43,9 @@ def create_course_events(service):
         class_start_time = datetime.strptime(course['start_time'], "%H:%M:%S").time()
         class_end_time = datetime.strptime(course['end_time'], "%H:%M:%S").time()
 
-        # Get the next class day of the week using the day mapping
-        class_start_datetime = semester_class_start_date + timedelta(days=(datetime.strptime(day_mapping[course['day']], '%a') - semester_class_start_date).days) + timedelta(hours=class_start_time.hour, minutes=class_start_time.minute)
-        class_end_datetime = semester_class_start_date + timedelta(days=(datetime.strptime(day_mapping[course['day']], '%a') - semester_class_start_date).days) + timedelta(hours=class_end_time.hour, minutes=class_end_time.minute)
+        # Calculate the start and end datetime for the event based on the class date and time
+        class_start_datetime = datetime.combine(semester_class_start_date, class_start_time)
+        class_end_datetime = datetime.combine(semester_class_start_date, class_end_time)
 
         
         event = {
@@ -79,7 +72,7 @@ def create_course_events(service):
             'colorId': 6
         }
         
-        event = service.events().insert(calendarId='bc673861aeb99f89350562855352bd12a53b6a14fe84a8046ff57cd0b9dccf78@group.calendar.google.com', body=event).execute()
+        event = service.events().insert(calendarId=CAL_ID, body=event).execute()
         print('Event created: %s' % (event.get('htmlLink')))
        
 
@@ -88,20 +81,24 @@ def delete_all_events(service):
     # Define the start and end dates of the semester
     semester_class_start_date = datetime.strptime("2023-08-02", "%Y-%m-%d")
     semester_class_end_date = datetime.strptime("2023-11-13", "%Y-%m-%d")
-    
+    now = datetime.utcnow().isoformat() + 'Z' 
     # Fetch all events within the semester date range
     events = service.events().list(
-        calendarId='bc673861aeb99f89350562855352bd12a53b6a14fe84a8046ff57cd0b9dccf78@group.calendar.google.com',
-        timeMin=semester_class_start_date.strftime("%Y-%m-%dT00:00:00Z"),
-        timeMax=semester_class_end_date.strftime("%Y-%m-%dT23:59:59Z"),
+        calendarId=CAL_ID,
+        timeMin=semester_class_start_date.isoformat() + 'Z',
+        timeMax=semester_class_end_date.isoformat() + 'Z',singleEvents=True,
+                                            orderBy='startTime'
     ).execute()
     print(events)
+    print("events",semester_class_start_date.isoformat() + 'Z', semester_class_end_date.isoformat() + 'Z' )
+    events_list = events.get('items', [])
+    print(events_list)
     # Delete each event one by one
     counter = 0
-    for event in events['items']:
+    for event in events_list:
         event_id = event['id']
         service.events().delete(
-            calendarId='bc673861aeb99f89350562855352bd12a53b6a14fe84a8046ff57cd0b9dccf78@group.calendar.google.com',
+            calendarId=CAL_ID,
             eventId=event_id
         ).execute()
         print(f"Event deleted: {event['summary']} : {(counter)*100 /len(events['items'])} % completed")

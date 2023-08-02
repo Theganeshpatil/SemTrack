@@ -7,7 +7,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from Functions import course_events
+from Functions import course_events, attendance
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
@@ -56,7 +56,9 @@ def main():
     try:
         service = build('calendar', 'v3', credentials=creds)
         # course_events.create_course_events(service)
-        course_events.delete_all_events(service)
+        # course_events.delete_all_events(service)
+        # get_events(service)
+        attendance.get_attendance(service)
     except HttpError as error:
         print('An error occurred: %s' % error)
 
