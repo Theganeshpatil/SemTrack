@@ -58,7 +58,9 @@ def main():
         # course_events.create_course_events(service)
         # course_events.delete_all_events(service)
         # get_events(service)
-        attendance.get_attendance(service)
+        # attendance.get_attendance(service)
+        # attendance.get_max_attendance(service)
+        course_events.delete_day(service=service, date="2023-08-15")
     except HttpError as error:
         print('An error occurred: %s' % error)
 

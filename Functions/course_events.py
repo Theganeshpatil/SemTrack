@@ -76,7 +76,6 @@ def create_course_events(service):
         print('Event created: %s' % (event.get('htmlLink')))
        
 
-
 def delete_all_events(service):
     # Define the start and end dates of the semester
     semester_class_start_date = datetime.strptime("2023-08-02", "%Y-%m-%d")
@@ -104,3 +103,31 @@ def delete_all_events(service):
         print(f"Event deleted: {event['summary']} : {(counter)*100 /len(events['items'])} % completed")
         counter += 1
     print(f"Deleted {counter} events")
+
+
+def delete_events_on_date(service, date):
+    """Delete all events on a given date
+    
+    Args: date (str): Date in YYYY-MM-DD format"""
+    # Fetch all events on that date
+    date_format = datetime.strptime(date, "%Y-%m-%d")
+    start_of_day = datetime(date_format.year, date_format.month, date_format.day, 0, 0, 0)
+    end_of_day = datetime(date_format.year, date_format.month, date_format.day, 23, 59, 59)
+
+    events = service.events().list(
+        calendarId=CAL_ID,
+        timeMin=start_of_day.isoformat() + 'Z',
+        timeMax=end_of_day.isoformat() + 'Z'
+    ).execute()
+
+    events_list = events.get('items', [])
+    count_events = 0
+    for event in events_list:
+        event_id = event['id']
+        service.events().delete(
+            calendarId=CAL_ID,
+            eventId=event_id
+        ).execute()
+        count_events += 1
+    
+    print(f"Deleted {count_events} events on", date)
