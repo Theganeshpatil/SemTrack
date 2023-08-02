@@ -56,3 +56,20 @@ Functions:
 5. Get Maximum Possible Attendance
 6. Delete Events on Date (Used in deleting holidays)
 7. Mark Absent for Events on Date
+
+# Initial Setup of the application by user
+
+1. Define course start date
+2. Define course end date
+3. Update the course_schedule for the week
+
+- {
+  "day": "MO",
+  "start_time": "09:00:00",
+  "end_time": "09:55:00",
+  "event_name": "CBS 311 LS",
+  }
+- Add keys which you'll be using to create calender event. e.g New key colorId can be added to give different color to each event
+- Update Holidays so you can remove session on those days
+- Remove session on mid sem
+- If you have planned a future leave can mark absent now itself
