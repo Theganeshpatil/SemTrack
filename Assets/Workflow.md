@@ -36,7 +36,7 @@ To create all classes events in whole semester:
 
 # Remove classes on Holidays
 
-holidays = [// all dates \\]
+holidays = ["2023-08-15", "2023-08-29", "2023-09-27", "2023-10-02", "2023-10-23", "2023-10-24", "2023-11-12"]
 
 - Now calculate no of sessions held in a semester
   no_of_sessions_of_each_course = (int)
@@ -45,5 +45,14 @@ holidays = [// all dates \\]
 
 Functions:
 
-1. Calculate maximum possible attendace
-2. Calculate attendance till date
+1. Create Course Events
+
+- Delete All holidays
+- Update their description to attended
+
+2. Delete All Events
+3. Get Events (Upcoming )
+4. Get Attendance
+5. Get Maximum Possible Attendance
+6. Delete Events on Date (Used in deleting holidays)
+7. Mark Absent for Events on Date

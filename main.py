@@ -9,62 +9,104 @@ from googleapiclient.errors import HttpError
 
 from Functions import course_events, attendance
 
-SCOPES = ['https://www.googleapis.com/auth/calendar']
-
+SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
 
 def get_events(service):
-    
-    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-    print('Getting the upcoming 10 events')
-    events_result = service.events().list(calendarId='bc673861aeb99f89350562855352bd12a53b6a14fe84a8046ff57cd0b9dccf78@group.calendar.google.com', timeMin=now,
-                                            maxResults=10, singleEvents=True,
-                                            orderBy='startTime').execute()
-    events = events_result.get('items', [])
+    now = datetime.datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
+    print("Getting the upcoming 10 events")
+    events_result = (
+        service.events()
+        .list(
+            calendarId="bc673861aeb99f89350562855352bd12a53b6a14fe84a8046ff57cd0b9dccf78@group.calendar.google.com",
+            timeMin=now,
+            maxResults=10,
+            singleEvents=True,
+            orderBy="startTime",
+        )
+        .execute()
+    )
+    events = events_result.get("items", [])
 
     if not events:
-        print('No upcoming events found.')
+        print("No upcoming events found.")
         return
 
     # Prints the start and name of the next 10 events
     for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
-
+        start = event["start"].get("dateTime", event["start"].get("date"))
+        print(start, event["summary"])
 
 
 def main():
-
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if os.path.exists("token.json"):
+        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.json', 'w') as token:
+        with open("token.json", "w") as token:
             token.write(creds.to_json())
 
     try:
-        service = build('calendar', 'v3', credentials=creds)
-        # course_events.create_course_events(service)
-        # course_events.delete_all_events(service)
-        # get_events(service)
-        # attendance.get_attendance(service)
-        # attendance.get_max_attendance(service)
-        course_events.delete_day(service=service, date="2023-08-15")
+        service = build("calendar", "v3", credentials=creds)
+
+        options = [
+            "1. Create Course Events",
+            "2. Delete All Events",
+            "3. Get Events",
+            "4. Get Attendance",
+            "5. Get Maximum Possible Attendance",
+            "6. Delete Events on Date",
+            "7. Mark Absent for Events on Date",
+            "8. Remove Sessions of holidays",
+            "0. Exit",
+        ]
+
+        while True:
+            print("\nSelect an option:")
+            for option in options:
+                print(option)
+            choice = input("Enter your choice (0-7): ")
+
+            if choice == "1":
+                course_events.create_course_events(service)
+            elif choice == "2":
+                course_events.delete_all_events(service)
+            elif choice == "3":
+                get_events(service)
+            elif choice == "4":
+                attendance.get_attendance(service)
+            elif choice == "5":
+                attendance.get_max_attendance(service)
+            elif choice == "6":
+                date = input("Enter the date in YYYY-MM-DD format: ")
+                course_events.delete_events_on_date(service=service, date=date)
+            elif choice == "7":
+                date_start = input("Enter the date in YYYY-MM-DD format: ")
+                date_end = input("Enter the date in YYYY-MM-DD format (Leave Blank for one day Absent): ")
+                reason = input("Enter the reason for being absent: ")
+                course_events.absent_events_on_date(
+                    service=service, date_start=date_start, date_end=date_end, reason=reason
+                )
+            elif choice == "8":
+                course_events.remove_sessions_on_holidays(service)
+            elif choice == "0":
+                break
+            else:
+                print("Invalid choice. Please enter a valid option (0-8).")
+
     except HttpError as error:
-        print('An error occurred: %s' % error)
+        print("An error occurred: %s" % error)
 
-    
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
