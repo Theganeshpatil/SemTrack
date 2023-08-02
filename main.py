@@ -12,32 +12,6 @@ from Functions import course_events, attendance
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
 
-def get_events(service):
-    now = datetime.datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
-    print("Getting the upcoming 10 events")
-    events_result = (
-        service.events()
-        .list(
-            calendarId="bc673861aeb99f89350562855352bd12a53b6a14fe84a8046ff57cd0b9dccf78@group.calendar.google.com",
-            timeMin=now,
-            maxResults=10,
-            singleEvents=True,
-            orderBy="startTime",
-        )
-        .execute()
-    )
-    events = events_result.get("items", [])
-
-    if not events:
-        print("No upcoming events found.")
-        return
-
-    # Prints the start and name of the next 10 events
-    for event in events:
-        start = event["start"].get("dateTime", event["start"].get("date"))
-        print(start, event["summary"])
-
-
 def main():
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is

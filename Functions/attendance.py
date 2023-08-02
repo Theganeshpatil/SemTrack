@@ -1,11 +1,17 @@
 from datetime import datetime
 
-CAL_ID = "bc673861aeb99f89350562855352bd12a53b6a14fe84a8046ff57cd0b9dccf78@group.calendar.google.com"
+from dotenv import load_dotenv
+import os
 
-# Define the start and end dates of the semester
-semester_class_start_date = datetime.strptime("2023-08-02", "%Y-%m-%d")
-semester_class_end_date = datetime.strptime("2023-11-13", "%Y-%m-%d")
-now = datetime.utcnow().isoformat() + "Z"
+load_dotenv()
+CAL_ID = os.environ.get("CAL_ID")
+SEM_START_DATE = os.environ.get("SEM_START_DATE")
+SEM_END_DATE = os.environ.get("SEM_END_DATE")
+
+# Variables
+semester_class_start_date = datetime.strptime(SEM_START_DATE, "%Y-%m-%d")
+semester_class_end_date = datetime.strptime(SEM_END_DATE, "%Y-%m-%d")
+now = datetime.datetime.utcnow().isoformat() + "Z"
 
 
 def get_attendance(service):

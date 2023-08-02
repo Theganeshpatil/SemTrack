@@ -1,7 +1,43 @@
 from datetime import datetime, timedelta
 from googleapiclient.discovery import build
 
-CAL_ID = "bc673861aeb99f89350562855352bd12a53b6a14fe84a8046ff57cd0b9dccf78@group.calendar.google.com"
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+CAL_ID = os.environ.get("CAL_ID")
+SEM_START_DATE = os.environ.get("SEM_START_DATE")
+SEM_END_DATE = os.environ.get("SEM_END_DATE")
+
+# Variables
+semester_class_start_date = datetime.strptime(SEM_START_DATE, "%Y-%m-%d")
+semester_class_end_date = datetime.strptime(SEM_END_DATE, "%Y-%m-%d")
+now = datetime.datetime.utcnow().isoformat() + "Z"
+
+def get_events(service):
+    print("Getting the upcoming 10 events")
+    events_result = (
+        service.events()
+        .list(
+            calendarId=CAL_ID,
+            timeMin=now,
+            maxResults=10,
+            singleEvents=True,
+            orderBy="startTime",
+        )
+        .execute()
+    )
+    events = events_result.get("items", [])
+
+    if not events:
+        print("No upcoming events found.")
+        return
+
+    # Prints the start and name of the next 10 events
+    for event in events:
+        start = event["start"].get("dateTime", event["start"].get("date"))
+        print(start, event["summary"])
+
 
 
 def create_course_events(service):
@@ -143,9 +179,6 @@ def create_course_events(service):
         },
     ]
 
-    # Define the start and end dates of the semester
-    semester_class_start_date = datetime.strptime("2023-08-02", "%Y-%m-%d")
-    semester_class_end_date = datetime.strptime("2023-11-13", "%Y-%m-%d")
 
     for course in course_schedule:
         # Calculate the class start and end time for each day
@@ -187,10 +220,7 @@ def create_course_events(service):
 
 
 def delete_all_events(service):
-    # Define the start and end dates of the semester
-    semester_class_start_date = datetime.strptime("2023-08-02", "%Y-%m-%d")
-    semester_class_end_date = datetime.strptime("2023-11-13", "%Y-%m-%d")
-    now = datetime.utcnow().isoformat() + "Z"
+    
     # Fetch all events within the semester date range
     events = (
         service.events()
