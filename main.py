@@ -56,7 +56,7 @@ def main():
             elif choice == "2":
                 course_events.delete_all_events(service)
             elif choice == "3":
-                get_events(service)
+                course_events.get_events(service)
             elif choice == "4":
                 attendance.get_attendance(service)
             elif choice == "5":
