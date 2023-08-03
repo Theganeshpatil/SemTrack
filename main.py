@@ -7,7 +7,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from Functions import course_events, attendance
+from Functions import course_events, attendance, initial_setup
 
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
@@ -42,6 +42,7 @@ def main():
             "6. Delete Events on Date",
             "7. Mark Absent for Events on Date",
             "8. Remove Sessions of holidays",
+            "9. Initial Setup",
             "0. Exit",
         ]
 
@@ -75,8 +76,11 @@ def main():
                 course_events.remove_sessions_on_holidays(service)
             elif choice == "0":
                 break
+            elif choice == "9":
+                initial_setup.init_setup()
             else:
                 print("Invalid choice. Please enter a valid option (0-8).")
+
 
     except HttpError as error:
         print("An error occurred: %s" % error)

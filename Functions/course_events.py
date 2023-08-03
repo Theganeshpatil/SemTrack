@@ -13,36 +13,7 @@ SEM_END_DATE = os.environ.get("SEM_END_DATE")
 semester_class_start_date = datetime.strptime(SEM_START_DATE, "%Y-%m-%d")
 semester_class_end_date = datetime.strptime(SEM_END_DATE, "%Y-%m-%d")
 now = datetime.utcnow().isoformat() + "Z"
-
-def get_events(service):
-    print("Getting the upcoming 10 events")
-    events_result = (
-        service.events()
-        .list(
-            calendarId=CAL_ID,
-            timeMin=now,
-            maxResults=10,
-            singleEvents=True,
-            orderBy="startTime",
-        )
-        .execute()
-    )
-    events = events_result.get("items", [])
-
-    if not events:
-        print("No upcoming events found.")
-        return
-
-    # Prints the start and name of the next 10 events
-    for event in events:
-        start = event["start"].get("dateTime", event["start"].get("date"))
-        print(start, event["summary"])
-
-
-
-def create_course_events(service):
-    # Define the courses schedule with their respective week day, start time, end time, and event name
-    course_schedule = [
+course_schedule = [
         # Classes
         {
             "day": "MO",
@@ -178,7 +149,37 @@ def create_course_events(service):
             "event_name": "CBS 312 LAB GBC",
         },
     ]
+holidays = ["2023-08-15", "2023-08-29", "2023-09-27", "2023-10-02", "2023-10-23", "2023-10-24", "2023-11-12"]
 
+def get_events(service):
+    print("Getting the upcoming 10 events")
+    events_result = (
+        service.events()
+        .list(
+            calendarId=CAL_ID,
+            timeMin=now,
+            maxResults=10,
+            singleEvents=True,
+            orderBy="startTime",
+        )
+        .execute()
+    )
+    events = events_result.get("items", [])
+
+    if not events:
+        print("No upcoming events found.")
+        return
+
+    # Prints the start and name of the next 10 events
+    for event in events:
+        start = event["start"].get("dateTime", event["start"].get("date"))
+        print(start, event["summary"])
+
+
+
+def create_course_events(service):
+    # Define the courses schedule with their respective week day, start time, end time, and event name
+    
 
     for course in course_schedule:
         # Calculate the class start and end time for each day
@@ -212,11 +213,70 @@ def create_course_events(service):
                     {"method": "popup", "minutes": 10},
                 ],
             },
-            "colorId": 6,
+            "colorId": 7,
         }
 
         event = service.events().insert(calendarId=CAL_ID, body=event).execute()
-        print("Event created: %s" % (event.get("htmlLink")))
+        print("Event created: ", event.get("summary"))
+
+    # Delete extra events created by the recurrence rule on first day of class
+    print("Deleting extra events created by the recurrence rule on first day of class")
+    date_format = semester_class_start_date
+    start_of_day = datetime(
+        date_format.year, date_format.month, date_format.day, 0, 0, 0
+    )
+    end_of_day = datetime(
+        date_format.year, date_format.month, date_format.day, 23, 59, 59
+    )
+    events_on_first_day = (
+    service.events()
+    .list(
+        calendarId=CAL_ID,
+        timeMin=start_of_day.isoformat() + "Z",
+        timeMax=end_of_day.isoformat() + "Z",
+        singleEvents=True,
+    )
+    .execute()
+    )
+
+    events_on_first_day_list = events_on_first_day.get("items", [])
+
+    # Get the day on first date of semester
+    first_day_of_semester = ((semester_class_start_date.strftime("%A"))[0:2]).upper() # Wednesday -> WE 
+
+    for event in events_on_first_day_list:
+       # Keep only correct events to do so we check the second instance of the event is on the same day as the first day of semester
+
+        # Get the instance
+        recurringEventId = event["recurringEventId"]
+        instances = service.events().instances(calendarId=CAL_ID, eventId=recurringEventId).execute()
+        instance = instances['items'][1]
+        # Get the start date of the instance
+        instance_start_date = (instance["start"].get("dateTime", instance["start"].get("date")))
+        instance_start_date = datetime.fromisoformat(instance_start_date.replace("T", " "))
+        instance_start_day = ((instance_start_date.strftime("%A"))[0:2]).upper()
+        
+        if instance_start_day != first_day_of_semester:
+            print("Deleting event: ", event.get("summary"))
+            service.events().delete(calendarId=CAL_ID, eventId=event["id"]).execute()
+
+        # Successfully removed extra events created by the recurrence rule on first day of class
+
+    # Delete holidays from the calendar
+    remove_sessions_on_holidays(service)
+
+    # Delete days reserved for exams from the calendar
+    exam_dates = []
+    while True:
+        exam_date = input(
+            "Enter exam date in YYYY-MM-DD format (leave blank to skip): "
+        )
+        if exam_date == "":
+            break
+        exam_dates.append(exam_date)
+    for date in exam_dates:
+        delete_events_on_date(service, date)
+    print('Deleted sessions on mid sems')
 
 
 def delete_all_events(service):
@@ -333,6 +393,5 @@ def absent_events_on_date(service, date_start, date_end, reason):
 
 
 def remove_sessions_on_holidays(service):
-    holidays = ["2023-08-15", "2023-08-29", "2023-09-27", "2023-10-02", "2023-10-23", "2023-10-24", "2023-11-12"]
     for holiday in holidays:
         delete_events_on_date(service, holiday)
