@@ -8,7 +8,7 @@ SemTrack is a Google Calendar manager project, which focuses on attendance track
 - Install the required dependencies using the command: `pip install -r requirements.txt`.
 - Obtain the necessary credentials from the Google Developers Console and save them as credentials.json.
 - To get the credentials.json refer to [Set up your environment from Google Calender API docs](https://developers.google.com/calendar/api/quickstart/python#set_up_your_environment)
-- Now rename the .env.example file to .env and update it
+- Update sem_config.yaml: Customize the sem_config.yaml file to match your semester schedule. The file contains the class details, including the day, start time, and end time for each class. You can refer to the example provided in the repository and modify it according to your own timetable.
 - Run the script using the command: `python main.py`.
 
 # Usage
