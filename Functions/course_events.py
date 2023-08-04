@@ -1,162 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from googleapiclient.discovery import build
 
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-CAL_ID = os.environ.get("CAL_ID")
-SEM_START_DATE = os.environ.get("SEM_START_DATE")
-SEM_END_DATE = os.environ.get("SEM_END_DATE")
-
-# Variables
-semester_class_start_date = datetime.strptime(SEM_START_DATE, "%Y-%m-%d")
-semester_class_end_date = datetime.strptime(SEM_END_DATE, "%Y-%m-%d")
-now = datetime.utcnow().isoformat() + "Z"
-course_schedule = [
-        # Classes
-        {
-            "day": "MO",
-            "start_time": "09:00:00",
-            "end_time": "09:55:00",
-            "event_name": "CBS 311 LS",
-        },
-        {
-            "day": "TU",
-            "start_time": "09:00:00",
-            "end_time": "09:55:00",
-            "event_name": "CBS 311 LS",
-        },
-        {
-            "day": "WE",
-            "start_time": "09:00:00",
-            "end_time": "09:55:00",
-            "event_name": "CBS 312 GBC",
-        },
-        {
-            "day": "TH",
-            "start_time": "09:00:00",
-            "end_time": "09:55:00",
-            "event_name": "IMA 313 BA",
-        },
-        {
-            "day": "FR",
-            "start_time": "09:00:00",
-            "end_time": "09:55:00",
-            "event_name": "IEC 312 ES",
-        },
-        {
-            "day": "WE",
-            "start_time": "10:00:00",
-            "end_time": "10:55:00",
-            "event_name": "IMA 313 BA",
-        },
-        {
-            "day": "TH",
-            "start_time": "10:00:00",
-            "end_time": "10:55:00",
-            "event_name": "CBS 312 GBC",
-        },
-        {
-            "day": "FR",
-            "start_time": "10:00:00",
-            "end_time": "10:55:00",
-            "event_name": "IHS 314 SKJ",
-        },
-        {
-            "day": "MO",
-            "start_time": "10:00:00",
-            "end_time": "10:55:00",
-            "event_name": "CBE 311 VP",
-        },
-        {
-            "day": "TH",
-            "start_time": "11:05:00",
-            "end_time": "12:00:00",
-            "event_name": "IHS 314 SKJ",
-        },
-        {
-            "day": "FR",
-            "start_time": "11:05:00",
-            "end_time": "12:00:00",
-            "event_name": "CBS 312 GBC",
-        },
-        {
-            "day": "MO",
-            "start_time": "12:05:00",
-            "end_time": "13:00:00",
-            "event_name": "CBS 311 LS",
-        },
-        {
-            "day": "TU",
-            "start_time": "12:05:00",
-            "end_time": "13:00:00",
-            "event_name": "IEC 312 ES",
-        },
-        {
-            "day": "WE",
-            "start_time": "12:05:00",
-            "end_time": "13:00:00",
-            "event_name": "CBE 311 VP",
-        },
-        {
-            "day": "TH",
-            "start_time": "12:05:00",
-            "end_time": "13:00:00",
-            "event_name": "CBE 312 ER",
-        },
-        {
-            "day": "FR",
-            "start_time": "12:05:00",
-            "end_time": "13:00:00",
-            "event_name": "IMA 313 BA",
-        },
-        {
-            "day": "MO",
-            "start_time": "14:00:00",
-            "end_time": "14:55:00",
-            "event_name": "IEC 312 ES",
-        },
-        {
-            "day": "TU",
-            "start_time": "14:00:00",
-            "end_time": "14:55:00",
-            "event_name": "CBE 311 VP",
-        },
-        {
-            "day": "WE",
-            "start_time": "14:00:00",
-            "end_time": "14:55:00",
-            "event_name": "IHS 314 SKJ",
-        },
-        # Labs
-        {
-            "day": "MO",
-            "start_time": "15:00:00",
-            "end_time": "17:00:00",
-            "event_name": "CBE 311 LAB VP",
-        },
-        {
-            "day": "TU",
-            "start_time": "15:00:00",
-            "end_time": "17:00:00",
-            "event_name": "IEC 312 LAB ES",
-        },
-        {
-            "day": "WE",
-            "start_time": "15:00:00",
-            "end_time": "17:00:00",
-            "event_name": "CBS 312 LAB GBC",
-        },
-    ]
-holidays = ["2023-08-15", "2023-08-29", "2023-09-27", "2023-10-02", "2023-10-23", "2023-10-24", "2023-11-12"]
-
-def get_events(service):
+def get_events(service, cal_id):
+    now = datetime.utcnow().isoformat() + "Z"
     print("Getting the upcoming 10 events")
     events_result = (
         service.events()
         .list(
-            calendarId=CAL_ID,
+            calendarId=cal_id,
             timeMin=now,
             maxResults=10,
             singleEvents=True,
@@ -176,10 +27,11 @@ def get_events(service):
         print(start, event["summary"])
 
 
-
-def create_course_events(service):
+# ✅
+def create_course_events(service, semester_class_start_date, semester_class_end_date, course_schedule, cal_id, holidays, mid_sem_dates):
     # Define the courses schedule with their respective week day, start time, end time, and event name
-    
+    semester_class_start_date = datetime.strptime(semester_class_start_date, "%Y-%m-%d").date()
+    semester_class_end_date = datetime.strptime(semester_class_end_date, "%Y-%m-%d").date()
 
     for course in course_schedule:
         # Calculate the class start and end time for each day
@@ -207,16 +59,12 @@ def create_course_events(service):
                 f'RRULE:FREQ=WEEKLY;BYDAY={course["day"]};UNTIL={semester_class_end_date.strftime("%Y%m%d")}',
             ],
             "reminders": {
-                "useDefault": False,
-                "overrides": [
-                    {"method": "email", "minutes": 24 * 60},
-                    {"method": "popup", "minutes": 10},
-                ],
+                "useDefault": True,
             },
-            "colorId": 7,
+            'colorId': '4',
         }
 
-        event = service.events().insert(calendarId=CAL_ID, body=event).execute()
+        event = service.events().insert(calendarId=cal_id, body=event).execute()
         print("Event created: ", event.get("summary"))
 
     # Delete extra events created by the recurrence rule on first day of class
@@ -231,7 +79,7 @@ def create_course_events(service):
     events_on_first_day = (
     service.events()
     .list(
-        calendarId=CAL_ID,
+        calendarId=cal_id,
         timeMin=start_of_day.isoformat() + "Z",
         timeMax=end_of_day.isoformat() + "Z",
         singleEvents=True,
@@ -249,7 +97,7 @@ def create_course_events(service):
 
         # Get the instance
         recurringEventId = event["recurringEventId"]
-        instances = service.events().instances(calendarId=CAL_ID, eventId=recurringEventId).execute()
+        instances = service.events().instances(calendarId=cal_id, eventId=recurringEventId).execute()
         instance = instances['items'][1]
         # Get the start date of the instance
         instance_start_date = (instance["start"].get("dateTime", instance["start"].get("date")))
@@ -258,42 +106,36 @@ def create_course_events(service):
         
         if instance_start_day != first_day_of_semester:
             print("Deleting event: ", event.get("summary"))
-            service.events().delete(calendarId=CAL_ID, eventId=event["id"]).execute()
+            service.events().delete(calendarId=cal_id, eventId=event["id"]).execute()
 
         # Successfully removed extra events created by the recurrence rule on first day of class
 
     # Delete holidays from the calendar
-    remove_sessions_on_holidays(service)
+    remove_sessions_on_holidays(service, holidays=holidays, cal_id=cal_id, )
+    remove_sessions_on_holidays(service, holidays=mid_sem_dates, cal_id=cal_id)
 
-    # Delete days reserved for exams from the calendar
-    exam_dates = []
-    while True:
-        exam_date = input(
-            "Enter exam date in YYYY-MM-DD format (leave blank to skip): "
-        )
-        if exam_date == "":
-            break
-        exam_dates.append(exam_date)
-    for date in exam_dates:
-        delete_events_on_date(service, date)
-    print('Deleted sessions on mid sems')
+    print("Successfully created course events")
 
 
-def delete_all_events(service):
-    
+def delete_all_events(service, semester_class_start_date, semester_class_end_date, cal_id ):
+    semester_class_start_date = datetime.strptime(semester_class_start_date, "%Y-%m-%d").date()
+    semester_class_end_date = datetime.strptime(semester_class_end_date, "%Y-%m-%d").date()
+
+    # Convert date objects to datetime objects
+    start_datetime = datetime.combine(semester_class_start_date, datetime.min.time())
+    end_datetime = datetime.combine(semester_class_end_date, datetime.max.time())
     # Fetch all events within the semester date range
     events = (
         service.events()
         .list(
-            calendarId=CAL_ID,
-            timeMin=semester_class_start_date.isoformat() + "Z",
-            timeMax=semester_class_end_date.isoformat() + "Z",
+            calendarId=cal_id,
+            timeMin=start_datetime.isoformat() + "Z",
+            timeMax=end_datetime.isoformat() + "Z",
             singleEvents=True,
             orderBy="startTime",
         )
         .execute()
     )
-    print(events)
     print(
         "events",
         semester_class_start_date.isoformat() + "Z",
@@ -305,15 +147,15 @@ def delete_all_events(service):
     counter = 0
     for event in events_list:
         event_id = event["id"]
-        service.events().delete(calendarId=CAL_ID, eventId=event_id).execute()
+        service.events().delete(calendarId=cal_id, eventId=event_id).execute()
         print(
             f"Event deleted: {event['summary']} : {(counter)*100 /len(events['items'])} % completed"
         )
         counter += 1
     print(f"Deleted {counter} events")
 
-
-def delete_events_on_date(service, date):
+# ✅
+def delete_events_on_date(service, date, cal_id):
     """Delete all events on a given date
 
     Args: date (str): Date in YYYY-MM-DD format"""
@@ -329,7 +171,7 @@ def delete_events_on_date(service, date):
     events = (
         service.events()
         .list(
-            calendarId=CAL_ID,
+            calendarId=cal_id,
             timeMin=start_of_day.isoformat() + "Z",
             timeMax=end_of_day.isoformat() + "Z",
             singleEvents=True,
@@ -341,13 +183,13 @@ def delete_events_on_date(service, date):
     count_events = 0
     for event in events_list:
         event_id = event["id"]
-        service.events().delete(calendarId=CAL_ID, eventId=event_id).execute()
+        service.events().delete(calendarId=cal_id, eventId=event_id).execute()
         count_events += 1
 
     print(f"Deleted {count_events} events on", date)
 
-
-def absent_events_on_date(service, date_start, date_end, reason):
+# ✅
+def absent_events_on_date(service, date_start, date_end, reason, cal_id):
     """Mark absent on all events of a given date
 
     Args: date (str): Date in YYYY-MM-DD format"""
@@ -368,7 +210,7 @@ def absent_events_on_date(service, date_start, date_end, reason):
     events = (
         service.events()
         .list(
-            calendarId=CAL_ID,
+            calendarId=cal_id,
             timeMin=start_of_day.isoformat() + "Z",
             timeMax=end_of_day.isoformat() + "Z",
             singleEvents=True,
@@ -383,7 +225,7 @@ def absent_events_on_date(service, date_start, date_end, reason):
         event["description"] = f"Absent due to {reason}"
         # print(event)
         service.events().update(
-            calendarId=CAL_ID, eventId=event_id, body=event
+            calendarId=cal_id, eventId=event_id, body=event
         ).execute()
         count_events += 1
 
@@ -391,7 +233,7 @@ def absent_events_on_date(service, date_start, date_end, reason):
         f"Marked Absent for {count_events} events from", date_start_format.strftime("%Y-%m-%d")
     )
 
-
-def remove_sessions_on_holidays(service):
+# ✅
+def remove_sessions_on_holidays(service, holidays, cal_id):
     for holiday in holidays:
-        delete_events_on_date(service, holiday)
+        delete_events_on_date(service, date=holiday, cal_id=cal_id)

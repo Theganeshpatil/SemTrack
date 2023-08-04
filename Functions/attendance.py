@@ -1,25 +1,28 @@
 from datetime import datetime
+import yaml
 
-from dotenv import load_dotenv
-import os
+# ✅
+def get_unique_events_dict():
+    with open("sem_config.yaml", "r") as f:
+        sem_config = yaml.safe_load(f)
+    event_names_dict = {}
+    for event in sem_config["COURSE_SCHEDULE"]:
+        event_name = event['event_name']
+        if event_name not in event_names_dict:
+            event_names_dict[event_name] = 0
+    return event_names_dict
 
-load_dotenv()
-CAL_ID = os.environ.get("CAL_ID")
-SEM_START_DATE = os.environ.get("SEM_START_DATE")
-SEM_END_DATE = os.environ.get("SEM_END_DATE")
-
-# Variables
-semester_class_start_date = datetime.strptime(SEM_START_DATE, "%Y-%m-%d")
-semester_class_end_date = datetime.strptime(SEM_END_DATE, "%Y-%m-%d")
-now = datetime.utcnow().isoformat() + "Z"
-
-
-def get_attendance(service):
+# ✅
+def get_attendance(service, semester_class_start_date, semester_class_end_date,cal_id):
+    # Variables
+    semester_class_start_date = datetime.strptime(semester_class_start_date, "%Y-%m-%d")
+    semester_class_end_date = datetime.strptime(semester_class_end_date, "%Y-%m-%d")
+    now = datetime.utcnow().isoformat() + "Z"
     # Fetch all events within the semester start date till now (range)
     events = (
         service.events()
         .list(
-            calendarId=CAL_ID,
+            calendarId=cal_id,
             timeMin=semester_class_start_date.isoformat() + "Z",
             timeMax=now,
             singleEvents=True,
@@ -33,31 +36,8 @@ def get_attendance(service):
 
     # Get total no of session held till now of each course
     # add pair value in total_session dictionary with key as course name and value as total no of session held till now
-    total_session = {
-        "CBS 311 LS": 0,
-        "CBS 312 GBC": 0,
-        "IMA 313 BA": 0,
-        "IEC 312 ES": 0,
-        "IHS 314 SKJ": 0,
-        "CBE 311 VP": 0,
-        "CBE 312 ER": 0,
-        "CBE 311 LAB VP": 0,
-        "IEC 312 LAB ES": 0,
-        "CBS 312 LAB GBC": 0,
-    }
-
-    attended_session = {
-        "CBS 311 LS": 0,
-        "CBS 312 GBC": 0,
-        "IMA 313 BA": 0,
-        "IEC 312 ES": 0,
-        "IHS 314 SKJ": 0,
-        "CBE 311 VP": 0,
-        "CBE 312 ER": 0,
-        "CBE 311 LAB VP": 0,
-        "IEC 312 LAB ES": 0,
-        "CBS 312 LAB GBC": 0,
-    }
+    total_session = get_unique_events_dict()
+    attended_session = get_unique_events_dict()
 
     for event in events_list:
         if event["summary"] in total_session.keys():
@@ -81,13 +61,16 @@ def get_attendance(service):
         print(f"Attendance Percentage: {attendance_percentage:.2f}%")
         print("-------------------")
 
-
-def get_max_attendance(service):
+# ✅
+def get_max_attendance(service, semester_class_start_date, semester_class_end_date,cal_id):
+    # Variables
+    semester_class_start_date = datetime.strptime(semester_class_start_date, "%Y-%m-%d")
+    semester_class_end_date = datetime.strptime(semester_class_end_date, "%Y-%m-%d")
     # Fetch all events within the semester start date till now (range)
     events = (
         service.events()
         .list(
-            calendarId=CAL_ID,
+            calendarId=cal_id,
             timeMin=semester_class_start_date.isoformat() + "Z",
             timeMax=semester_class_end_date.isoformat() + "Z",
             singleEvents=True,
@@ -101,31 +84,8 @@ def get_max_attendance(service):
 
     # Get total no of session held till now of each course
     # add pair value in total_session dictionary with key as course name and value as total no of session held till now
-    total_session = {
-        "CBS 311 LS": 0,
-        "CBS 312 GBC": 0,
-        "IMA 313 BA": 0,
-        "IEC 312 ES": 0,
-        "IHS 314 SKJ": 0,
-        "CBE 311 VP": 0,
-        "CBE 312 ER": 0,
-        "CBE 311 LAB VP": 0,
-        "IEC 312 LAB ES": 0,
-        "CBS 312 LAB GBC": 0,
-    }
-
-    attended_session = {
-        "CBS 311 LS": 0,
-        "CBS 312 GBC": 0,
-        "IMA 313 BA": 0,
-        "IEC 312 ES": 0,
-        "IHS 314 SKJ": 0,
-        "CBE 311 VP": 0,
-        "CBE 312 ER": 0,
-        "CBE 311 LAB VP": 0,
-        "IEC 312 LAB ES": 0,
-        "CBS 312 LAB GBC": 0,
-    }
+    total_session = get_unique_events_dict()
+    attended_session = get_unique_events_dict()
 
     for event in events_list:
         if event["summary"] in total_session.keys():
