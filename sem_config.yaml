@@ -1,0 +1,105 @@
+CAL_ID: jtaiaq2ej2trgdvc6idrqbi9m4@group.calendar.google.com
+COURSE_SCHEDULE:
+- day: MO
+  end_time: 09:55:00
+  event_name: CBS 311 LS
+  start_time: 09:00:00
+- day: TU
+  end_time: 09:55:00
+  event_name: CBS 311 LS
+  start_time: 09:00:00
+- day: WE
+  end_time: 09:55:00
+  event_name: CBS 312 GBC
+  start_time: 09:00:00
+- day: TH
+  end_time: 09:55:00
+  event_name: IMA 313 BA
+  start_time: 09:00:00
+- day: FR
+  end_time: 09:55:00
+  event_name: IEC 312 ES
+  start_time: 09:00:00
+- day: WE
+  end_time: '10:55:00'
+  event_name: IMA 313 BA
+  start_time: '10:00:00'
+- day: TH
+  end_time: '10:55:00'
+  event_name: CBS 312 GBC
+  start_time: '10:00:00'
+- day: FR
+  end_time: '10:55:00'
+  event_name: IHS 314 SKJ
+  start_time: '10:00:00'
+- day: MO
+  end_time: '10:55:00'
+  event_name: CBE 311 VP
+  start_time: '10:00:00'
+- day: TH
+  end_time: '12:00:00'
+  event_name: IHS 314 SKJ
+  start_time: '11:05:00'
+- day: FR
+  end_time: '12:00:00'
+  event_name: CBS 312 GBC
+  start_time: '11:05:00'
+- day: MO
+  end_time: '13:00:00'
+  event_name: CBS 311 LS
+  start_time: '12:05:00'
+- day: TU
+  end_time: '13:00:00'
+  event_name: IEC 312 ES
+  start_time: '12:05:00'
+- day: WE
+  end_time: '13:00:00'
+  event_name: CBE 311 VP
+  start_time: '12:05:00'
+- day: TH
+  end_time: '13:00:00'
+  event_name: CBE 312 ER
+  start_time: '12:05:00'
+- day: FR
+  end_time: '13:00:00'
+  event_name: IMA 313 BA
+  start_time: '12:05:00'
+- day: MO
+  end_time: '14:55:00'
+  event_name: IEC 312 ES
+  start_time: '14:00:00'
+- day: TU
+  end_time: '14:55:00'
+  event_name: CBE 311 VP
+  start_time: '14:00:00'
+- day: WE
+  end_time: '14:55:00'
+  event_name: IHS 314 SKJ
+  start_time: '14:00:00'
+- day: MO
+  end_time: '17:00:00'
+  event_name: CBE 311 LAB VP
+  start_time: '15:00:00'
+- day: TU
+  end_time: '17:00:00'
+  event_name: IEC 312 LAB ES
+  start_time: '15:00:00'
+- day: WE
+  end_time: '17:00:00'
+  event_name: CBS 312 LAB GBC
+  start_time: '15:00:00'
+HOLIDAYS:
+- '2023-08-15'
+- '2023-08-29'
+- '2023-09-27'
+- '2023-10-02'
+- '2023-10-23'
+- '2023-10-24'
+- '2023-11-12'
+MID_SEM_DATES:
+- '2023-09-01'
+- '2023-09-04'
+- '2023-10-05'
+- '2023-10-06'
+SEM_END_DATE: '2023-11-13'
+SEM_START_DATE: '2023-08-02'
