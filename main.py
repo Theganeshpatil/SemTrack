@@ -42,18 +42,12 @@ def main():
 
     try:
         service = build("calendar", "v3", credentials=creds)
-
         # setup the calendar
-
         # check if user has created the calender with user's email
-
         # if not then create the calendar & update it in config file
-
         # Once we have calendar id, it means user has aleady created the calendar events for the semester
         # so we can skip the initial setup
         # so options to get maximum possible attendance, get attendance, delete events on date, mark absent on date
-
-
         calender_list = service.calendarList().list().execute()
         calender_name = "SemTrack by Ganesh Patil"
         

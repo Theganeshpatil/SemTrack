@@ -1,7 +1,8 @@
 from datetime import datetime
 from googleapiclient.discovery import build
 
-def get_events(service):
+def get_events(service, cal_id):
+    now = datetime.utcnow().isoformat() + "Z"
     print("Getting the upcoming 10 events")
     events_result = (
         service.events()
