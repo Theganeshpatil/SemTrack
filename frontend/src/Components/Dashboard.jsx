@@ -20,14 +20,12 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchAttendance = async () => {
       const jwtToken = localStorage.getItem("jwt_token");
-      const response = await fetch(
-        `${BASE_URL}/attendance/get_attendance?jwt_token=${jwtToken}`,
-        {
-          headers: {
-            accept: "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${BASE_URL}/attendance/get_attendance`, {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
       const data = await response.json();
       setAttendance(data.attendance);
     };

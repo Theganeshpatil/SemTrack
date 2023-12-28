@@ -4,7 +4,11 @@ from fastapi import HTTPException
 import yaml
 import jwt
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+JWT_SECRET = os.getenv('JWT_SECRET')
 class AuthService:
     def get_auth_url(self):
         try:
@@ -28,13 +32,14 @@ class AuthService:
             access_token = flow.credentials.token
             refresh_token = flow.credentials.refresh_token 
 
-            jwt_token = jwt.encode({"access_token": access_token, "refresh_token": refresh_token}, 'your-secret-key', algorithm='HS256')
+            jwt_token = jwt.encode({"access_token": access_token, "refresh_token": refresh_token}, JWT_SECRET, algorithm='HS256')
             print(jwt_token)
             self.check_new_user(jwt_token)
             return {"jwt_token": jwt_token}
         except Exception as e:
             print(e)
-            raise HTTPException(status_code=500, detail=str(e))
+            # raise HTTPException(status_code=500, detail=str(e))
+            return {"msg": "error while exchanging code for tokens"}
 
     def check_new_user(self, jwt_token):
         self.create_credentials_from_jwt(jwt_token)
@@ -54,8 +59,9 @@ class AuthService:
         # User has never created the calendar & so create a new calender
 
     def create_credentials_from_jwt(self, jwt_token):
-        # Decode the JWT token
-        decoded = jwt.decode(jwt_token, 'your-secret-key', algorithms=['HS256'])
+        if jwt_token is None:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        decoded = jwt.decode(jwt_token, JWT_SECRET, algorithms=['HS256'])
 
         # Extract the access and refresh tokens
         access_token = decoded['access_token']
