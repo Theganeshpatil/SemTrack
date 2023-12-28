@@ -60,7 +60,7 @@ def get_attendance(service, semester_class_start_date, semester_class_end_date,c
         print(f"Total Sessions Attended: {attended_sessions}")
         print(f"Attendance Percentage: {attendance_percentage:.2f}%")
         print("-------------------")
-
+    return { "total_session": total_session, "attended_session": attended_session }
 # ✅
 def get_max_attendance(service, semester_class_start_date, semester_class_end_date,cal_id):
     # Variables
