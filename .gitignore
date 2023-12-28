@@ -1,5 +1,6 @@
 .env
 __pycache__
 credentials.json
+cli_credentials.json
 output.txt
 token.json
