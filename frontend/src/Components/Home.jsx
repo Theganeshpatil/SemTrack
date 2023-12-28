@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { BASE_URL } from "../config";
 
 function Home() {
   const [auth_url, setAuth_url] = useState("");
@@ -12,7 +13,7 @@ function Home() {
     console.log("Code:", code);
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/exchange_code_for_tokens",
+        `${BASE_URL}/auth/exchange_code_for_tokens`,
         {
           method: "POST",
           headers: {
@@ -48,7 +49,7 @@ function Home() {
   }, [navigate, location.pathname, location.search]);
 
   const handleAuthorization = () => {
-    fetch("http://127.0.0.1:8000/auth/url")
+    fetch(`${BASE_URL}/auth/auth_url`)
       .then((response) => response.json())
       .then((data) => {
         setAuth_url(data.auth_url);

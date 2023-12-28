@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { BASE_URL } from "../config";
 import {
   AppBar,
   Toolbar,
@@ -20,7 +21,7 @@ const Dashboard = () => {
     const fetchAttendance = async () => {
       const jwtToken = localStorage.getItem("jwt_token");
       const response = await fetch(
-        `http://127.0.0.1:8000/get_attendance?jwt_token=${jwtToken}`,
+        `${BASE_URL}/attendance/get_attendance?jwt_token=${jwtToken}`,
         {
           headers: {
             accept: "application/json",
