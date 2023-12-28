@@ -17,7 +17,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from Functions import course_events, attendance
+from app.repositories import course_events, attendance
 
 with open("sem_config.yaml", "r") as f:
     sem_config = yaml.safe_load(f)
